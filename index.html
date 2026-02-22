@@ -4,7 +4,43 @@
     <title>University Research Ranking</title>
 </head>
 <body>
-    <h1>University Researcher Ranking Platform</h1>
-    <p>Project setup in progress...</p>
+
+<h1>University Researcher Ranking Platform</h1>
+
+<h2>Add Test Researcher</h2>
+
+<input id="name" placeholder="Researcher Name">
+<button onclick="addResearcher()">Add Researcher</button>
+
+<p id="status"></p>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+
+const supabase = supabase.createClient(
+    "https://mueazsxhdwvlnzzmrjqk.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11ZWF6c3hoZHd2bG56em1yanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjQxNDMsImV4cCI6MjA4NzI0MDE0M30.Ad_ktM-_wNcDQg0aHRgCVGDcXFsEha-9uJ9j-0IrfmU"
+);
+
+async function addResearcher() {
+
+    const name = document.getElementById("name").value;
+
+    const { data, error } = await supabase
+        .from("researchers")
+        .insert([{ name: name }]);
+
+    if(error){
+        document.getElementById("status").innerText = "Error adding researcher";
+    }
+    else{
+        document.getElementById("status").innerText = "Researcher added!";
+    }
+
+}
+
+</script>
+
 </body>
 </html>
