@@ -8,6 +8,14 @@
 <h1>University Researcher Ranking Platform</h1>
 
 <h2>Add Test Researcher</h2>
+<h2>Add Publication</h2>
+
+<select id="researcherSelect"></select>
+<input id="pubTitle" placeholder="Publication Title">
+<input id="pubYear" placeholder="Year">
+<button id="addPubBtn">Add Publication</button>
+
+<p id="pubStatus"></p>
 
 <input id="name" placeholder="Researcher Name">
 <button id="addBtn">Add Researcher</button>
@@ -62,8 +70,50 @@ async function loadResearchers() {
     });
   }
 }
+async function loadResearchersDropdown() {
+
+  const { data } = await supabase
+    .from("researchers")
+    .select("*");
+
+  const select = document.getElementById("researcherSelect");
+  select.innerHTML = "";
+
+  if(data){
+    data.forEach(r => {
+      const option = document.createElement("option");
+      option.value = r.id;
+      option.textContent = r.name;
+      select.appendChild(option);
+    });
+  }
+}
+const pubButton = document.getElementById("addPubBtn");
+
+pubButton.addEventListener("click", async () => {
+
+  const researcherId = document.getElementById("researcherSelect").value;
+  const title = document.getElementById("pubTitle").value;
+  const year = document.getElementById("pubYear").value;
+
+  const { error } = await supabase
+    .from("publications")
+    .insert([{
+      researcher_id: researcherId,
+      title: title,
+      year: parseInt(year)
+    }]);
+
+  if(error){
+    document.getElementById("pubStatus").innerText = error.message;
+  } else {
+    document.getElementById("pubStatus").innerText = "Publication added!";
+  }
+
+});
 
 loadResearchers();
+async function loadResearchersDropdown() {
 
 </script>
 
