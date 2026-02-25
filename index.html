@@ -65,7 +65,10 @@ async function loadResearchers() {
   if(data){
     data.forEach(r => {
       const li = document.createElement("li");
-      li.textContent = r.name;
+const link = document.createElement("a");
+link.href = "profile.html?id=" + r.id;
+link.textContent = r.name;
+li.appendChild(link);
       list.appendChild(li);
     });
   }
