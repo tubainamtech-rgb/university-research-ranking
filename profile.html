@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Researcher Profile</title>
+</head>
+<body>
+
+<h1>Researcher Profile</h1>
+
+<h2 id="researcherName"></h2>
+
+<h3>Publications</h3>
+<ul id="publicationList"></ul>
+
+<script type="module">
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  "YOUR_SUPABASE_URL",
+  "YOUR_SUPABASE_ANON_KEY"
+);
+
+const params = new URLSearchParams(window.location.search);
+const researcherId = params.get("id");
+
+async function loadProfile() {
+
+  const { data: researcher } = await supabase
+    .from("researchers")
+    .select("*")
+    .eq("id", researcherId)
+    .single();
+
+  document.getElementById("researcherName").innerText = researcher.name;
+
+  const { data: publications } = await supabase
+    .from("publications")
+    .select("*")
+    .eq("researcher_id", researcherId);
+
+  const list = document.getElementById("publicationList");
+  list.innerHTML = "";
+
+  publications.forEach(p => {
+    const li = document.createElement("li");
+    li.textContent = p.title + " (" + p.year + ")";
+    list.appendChild(li);
+  });
+}
+
+loadProfile();
+
+</script>
+
+</body>
+</html>
