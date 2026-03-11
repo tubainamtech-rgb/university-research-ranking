@@ -37,7 +37,10 @@ async function loadLeaderboard() {
 
       const li = document.createElement("li");
 
-      li.textContent = r.name + " — Score: " + (r.score || 0);
+    const link = document.createElement("a");
+link.href = "profile.html?id=" + r.id;
+link.textContent = r.name + " — Score: " + (r.score || 0);
+li.appendChild(link);
 
       list.appendChild(li);
 
