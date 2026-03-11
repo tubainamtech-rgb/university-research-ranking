@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register as a Researcher</title>
+</head>
+<body>
+
+<h1>Register as a Researcher</h1>
+<p>Fill in the form below to add yourself to the platform. Your profile will be visible immediately. Your ranking score will appear after admin review.</p>
+
+<input id="regName" placeholder="Your Full Name" style="display:block; margin-bottom:10px;">
+<input id="regDiscipline" placeholder="Your Discipline (e.g. Sociology, Law)" style="display:block; margin-bottom:10px;">
+<input id="regAffiliation" placeholder="Your University / Institution" style="display:block; margin-bottom:10px;">
+
+<button id="regBtn">Register</button>
+
+<p id="regStatus"></p>
+
+<a href="index.html">← Back to Home</a>
+
+<script type="module">
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  "https://mueazsxhdwvlnzzmrjqk.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11ZWF6c3hoZHd2bG56em1yanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjQxNDMsImV4cCI6MjA4NzI0MDE0M30.Ad_ktM-_wNcDQg0aHRgCVGDcXFsEha-9uJ9j-0IrfmU"
+);
+
+document.getElementById("regBtn").addEventListener("click", async () => {
+
+  const name = document.getElementById("regName").value.trim();
+  const discipline = document.getElementById("regDiscipline").value.trim();
+  const affiliation = document.getElementById("regAffiliation").value.trim();
+
+  // Make sure name is filled in at minimum
+  if (!name) {
+    document.getElementById("regStatus").innerText = "Please enter your name.";
+    return;
+  }
+
+  // Check if a researcher with this exact name already exists
+  const { data: existing } = await supabase
+    .from("researchers")
+    .select("id")
+    .eq("name", name)
+    .single();
+
+  if (existing) {
+    document.getElementById("regStatus").innerText = "A researcher with this name already exists.";
+    return;
+  }
+
+  // Insert the new researcher
+  // score_approved is false by default — score won't show on leaderboard until admin approves
+  const { error } = await supabase
+    .from("researchers")
+    .insert([{
+      name: name,
+      discipline: discipline,
+      affiliation: affiliation,
+      score_approved: false
+    }]);
+
+  if (error) {
+    document.getElementById("regStatus").innerText = "Error: " + error.message;
+  } else {
+    document.getElementById("regStatus").innerText = "✅ You have been registered successfully! Your profile is now live. Your ranking will appear after review.";
+    // Clear the form
+    document.getElementById("regName").value = "";
+    document.getElementById("regDiscipline").value = "";
+    document.getElementById("regAffiliation").value = "";
+  }
+
+});
+
+</script>
+</body>
+</html>
