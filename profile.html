@@ -32,7 +32,10 @@ async function loadProfile() {
     .eq("id", researcherId)
     .single();
 
+  if (researcher) {
   document.getElementById("researcherName").innerText = researcher.name;
+}
+
 
   const { data: publications } = await supabase
     .from("publications")
