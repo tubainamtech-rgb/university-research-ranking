@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Researcher Leaderboard</title>
+</head>
+
+<body>
+
+<h1>Top Researchers</h1>
+
+<ol id="leaderboardList"></ol>
+
+<a href="index.html">← Back to Home</a>
+
+<script type="module">
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  "https://mueazsxhdwvlnzzmrjqk.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11ZWF6c3hoZHd2bG56em1yanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjQxNDMsImV4cCI6MjA4NzI0MDE0M30.Ad_ktM-_wNcDQg0aHRgCVGDcXFsEha-9uJ9j-0IrfmU"
+);
+
+async function loadLeaderboard() {
+
+  const { data, error } = await supabase
+    .from("researchers")
+    .select("*")
+    .order("score", { ascending: false });
+
+  const list = document.getElementById("leaderboardList");
+  list.innerHTML = "";
+
+  if(data){
+
+    data.forEach(r => {
+
+      const li = document.createElement("li");
+
+      li.textContent = r.name + " — Score: " + (r.score || 0);
+
+      list.appendChild(li);
+
+    });
+
+  }
+
+}
+
+loadLeaderboard();
+
+</script>
+
+</body>
+</html>
