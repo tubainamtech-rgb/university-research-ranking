@@ -23,9 +23,10 @@ const supabase = createClient(
 
 async function loadLeaderboard() {
 
-  const { data, error } = await supabase
+const { data, error } = await supabase
     .from("researchers")
     .select("*")
+    .eq("score_approved", true)
     .order("score", { ascending: false });
 
   const list = document.getElementById("leaderboardList");
