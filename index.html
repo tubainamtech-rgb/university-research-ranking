@@ -161,13 +161,24 @@ fetchButton.addEventListener("click", async () => {
 
     if(researcher){
 
-      await supabase
-        .from("publications")
-        .insert([{
-          researcher_id: researcher.id,
-          title: title,
-          year: year
-        }]);
+     // Check if this publication already exists before inserting
+const { data: existingPub } = await supabase
+  .from("publications")
+  .select("id")
+  .eq("researcher_id", researcher.id)
+  .eq("title", title)
+  .single();
+
+// Only insert if it doesn't already exist
+if (!existingPub) {
+  await supabase
+    .from("publications")
+    .insert([{
+      researcher_id: researcher.id,
+      title: title,
+      year: year
+    }]);
+}
 
     }
 
