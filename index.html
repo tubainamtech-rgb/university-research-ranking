@@ -9,7 +9,7 @@
  <a href="register.html">Register as a Researcher</a>   
 <a href="leaderboard.html">View Researcher Leaderboard</a>
 
-<h2>Add Test Researcher</h2>
+
 <h2>Add Publication</h2>
 <input id="fetchName" placeholder="Researcher Name for Auto Fetch">
 <button id="fetchBtn">Auto Fetch Publications</button>
@@ -23,10 +23,10 @@
 
 <p id="pubStatus"></p>
 
-<input id="name" placeholder="Researcher Name">
-<button id="addBtn">Add Researcher</button>
 
-<p id="status"></p>
+
+
+
 
 <h2>All Researchers</h2>
 <ul id="researcherList"></ul>
@@ -40,24 +40,6 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11ZWF6c3hoZHd2bG56em1yanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjQxNDMsImV4cCI6MjA4NzI0MDE0M30.Ad_ktM-_wNcDQg0aHRgCVGDcXFsEha-9uJ9j-0IrfmU"
 );
 
-const button = document.getElementById("addBtn");
-
-button.addEventListener("click", async () => {
-
-  const name = document.getElementById("name").value;
-
-  const { data, error } = await supabase
-    .from("researchers")
-    .insert([{ name: name }]);
-
-  if (error) {
-    document.getElementById("status").innerText = error.message;
-  } else {
-    document.getElementById("status").innerText = "Researcher added!";
-    loadResearchers();
-  }
-
-});
 
 async function loadResearchers() {
 
