@@ -67,7 +67,8 @@ async function loadResearchers() {
       const li = document.createElement("li");
 const link = document.createElement("a");
 link.href = "profile.html?id=" + r.id;
-link.textContent = r.name;
+link.textContent = r.name + " (Score: " + (r.score || 0) + ")";
+
 li.appendChild(link);
       list.appendChild(li);
     });
@@ -107,13 +108,38 @@ pubButton.addEventListener("click", async () => {
       year: parseInt(year)
     }]);
 
-  if(error){
-    document.getElementById("pubStatus").innerText = error.message;
-  } else {
-    document.getElementById("pubStatus").innerText = "Publication added!";
-  }
+ if(error){
+  document.getElementById("pubStatus").innerText = error.message;
+} else {
+  document.getElementById("pubStatus").innerText = "Publication added!";
+  updateScores();
+  loadResearchers();
+}
 
 });
+async function updateScores() {
+
+  const { data: researchers } = await supabase
+    .from("researchers")
+    .select("*");
+
+  for (const r of researchers) {
+
+    const { data: pubs } = await supabase
+      .from("publications")
+      .select("*")
+      .eq("researcher_id", r.id);
+
+    const score = pubs.length * 10;
+
+    await supabase
+      .from("researchers")
+      .update({ score: score })
+      .eq("id", r.id);
+
+  }
+
+}
 
 loadResearchers();
 loadResearchersDropdown();
