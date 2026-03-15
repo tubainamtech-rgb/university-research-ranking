@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Top Researchers by Discipline</title>
+</head>
+<body>
+
+<h1>Top Researchers by Discipline</h1>
+
+<nav>
+  <a href="leaderboard.html">🌍 Global</a> |
+  <a href="leaderboard_discipline.html"><strong>📚 By Discipline</strong></a> |
+  <a href="leaderboard_country.html">🌐 By Country</a> |
+  <a href="leaderboard_earlycareer.html">🌱 Early Career</a> |
+  <a href="leaderboard_institution.html">🏛️ By Institution</a>
+</nav>
+
+<br>
+
+<label for="disciplineFilter"><strong>Select Discipline:</strong></label>
+<select id="disciplineFilter">
+  <option value="">-- All Disciplines --</option>
+</select>
+
+<br><br>
+
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Discipline</th>
+      <th>Affiliation</th>
+      <th>Country</th>
+      <th>Score</th>
+    </tr>
+  </thead>
+  <tbody id="leaderboardBody">
+  </tbody>
+</table>
+
+<br>
+<a href="index.html">← Back to Home</a>
+
+<script type="module">
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  "https://mueazsxhdwvlnzzmrjqk.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11ZWF6c3hoZHd2bG56em1yanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjQxNDMsImV4cCI6MjA4NzI0MDE0M30.Ad_ktM-_wNcDQg0aHRgCVGDcXFsEha-9uJ9j-0IrfmU"
+);
+
+let allResearchers = [];
+
+async function loadResearchers() {
+
+  const { data } = await supabase
+    .from("researchers")
+    .select("*")
+    .eq("score_approved", true)
+    .order("score", { ascending: false });
+
+  allResearchers = data || [];
+
+  // Build discipline dropdown from actual data
+  const disciplines = [...new Set(allResearchers
+    .map(r => r.discipline)
+    .filter(d => d && d.trim() !== ""))];
+
+  const select = document.getElementById("disciplineFilter");
+  disciplines.forEach(d => {
+    const option = document.createElement("option");
+    option.value = d;
+    option.textContent = d;
+    select.appendChild(option);
+  });
+
+  renderTable(allResearchers);
+}
+
+function renderTable(data) {
+
+  const tbody = document.getElementById("leaderboardBody");
+  tbody.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='6'>No researchers found.</td></tr>";
+    return;
+  }
+
+  data.forEach((r, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td><a href="profile.html?id=${r.id}">${r.name}</a></td>
+      <td>${r.discipline || "—"}</td>
+      <td>${r.affiliation || "—"}</td>
+      <td>${r.country || "—"}</td>
+      <td>${r.score || 0}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById("disciplineFilter").addEventListener("change", (e) => {
+  const selected = e.target.value;
+  if (!selected) {
+    renderTable(allResearchers);
+  } else {
+    const filtered = allResearchers.filter(r => r.discipline === selected);
+    renderTable(filtered);
+  }
+});
+
+loadResearchers();
+
+</script>
+</body>
+</html>
