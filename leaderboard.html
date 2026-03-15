@@ -3,13 +3,37 @@
 <head>
   <title>Researcher Leaderboard</title>
 </head>
-
 <body>
 
-<h1>Top Researchers</h1>
+<h1>Global Top Social Scientists</h1>
+<p>Showing all approved researchers ranked by score.</p>
 
-<ol id="leaderboardList"></ol>
+<nav>
+  <a href="leaderboard.html"><strong>🌍 Global</strong></a> |
+  <a href="leaderboard_discipline.html">📚 By Discipline</a> |
+  <a href="leaderboard_country.html">🌐 By Country</a> |
+  <a href="leaderboard_earlycareer.html">🌱 Early Career</a> |
+  <a href="leaderboard_institution.html">🏛️ By Institution</a>
+</nav>
 
+<br>
+
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Discipline</th>
+      <th>Affiliation</th>
+      <th>Country</th>
+      <th>Score</th>
+    </tr>
+  </thead>
+  <tbody id="leaderboardBody">
+  </tbody>
+</table>
+
+<br>
 <a href="index.html">← Back to Home</a>
 
 <script type="module">
@@ -23,37 +47,37 @@ const supabase = createClient(
 
 async function loadLeaderboard() {
 
-const { data, error } = await supabase
+  const { data, error } = await supabase
     .from("researchers")
     .select("*")
     .eq("score_approved", true)
     .order("score", { ascending: false });
 
-  const list = document.getElementById("leaderboardList");
-  list.innerHTML = "";
+  const tbody = document.getElementById("leaderboardBody");
+  tbody.innerHTML = "";
 
-  if(data){
-
-    data.forEach(r => {
-
-      const li = document.createElement("li");
-
-    const link = document.createElement("a");
-link.href = "profile.html?id=" + r.id;
-link.textContent = r.name + " — Score: " + (r.score || 0);
-li.appendChild(link);
-
-      list.appendChild(li);
-
-    });
-
+  if (!data || data.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='6'>No approved researchers yet.</td></tr>";
+    return;
   }
+
+  data.forEach((r, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td><a href="profile.html?id=${r.id}">${r.name}</a></td>
+      <td>${r.discipline || "—"}</td>
+      <td>${r.affiliation || "—"}</td>
+      <td>${r.country || "—"}</td>
+      <td>${r.score || 0}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 
 }
 
 loadLeaderboard();
 
 </script>
-
 </body>
 </html>
