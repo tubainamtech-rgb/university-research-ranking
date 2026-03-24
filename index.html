@@ -173,11 +173,35 @@ const { data: existingPub } = await supabase
 if (!existingPub) {
   await supabase
     .from("publications")
-    .insert([{
-      researcher_id: researcher.id,
-      title: title,
-      year: year
-    }]);
+    .insert([let citations = 0;
+
+try {
+
+  const semanticResponse = await fetch(
+    "https://api.semanticscholar.org/graph/v1/paper/search?query=" 
+    + encodeURIComponent(title) + 
+    "&limit=1&fields=citationCount"
+  );
+
+  const semanticData = await semanticResponse.json();
+
+  if (semanticData.data && semanticData.data.length > 0) {
+    citations = semanticData.data[0].citationCount || 0;
+  }
+
+} catch (e) {
+  console.log("Citation fetch failed");
+}
+
+await supabase
+  .from("publications")
+  .insert([{
+    researcher_id: researcher.id,
+    title: title,
+    year: year,
+    citations: citations
+  }]);
+]);
 }
 
     }
