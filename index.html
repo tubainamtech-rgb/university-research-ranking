@@ -119,7 +119,13 @@ async function updateScores() {
       .select("*")
       .eq("researcher_id", r.id);
 
-    const score = pubs.length * 10;
+ let totalCitations = 0;
+
+pubs.forEach(p => {
+  totalCitations += p.citations || 0;
+});
+
+const score = (pubs.length * 5) + totalCitations;
 
     await supabase
       .from("researchers")
