@@ -47,7 +47,8 @@ async function loadProfile() {
 
   publications.forEach(p => {
     const li = document.createElement("li");
-    li.textContent = p.title + " (" + p.year + ")";
+    li.textContent = p.title + " (" + p.year + ") - Citations: " + (p.citations || 0);
+
     list.appendChild(li);
   });
 }
