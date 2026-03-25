@@ -101,8 +101,8 @@ pubButton.addEventListener("click", async () => {
   document.getElementById("pubStatus").innerText = error.message;
 } else {
   document.getElementById("pubStatus").innerText = "Publication added!";
-  updateScores();
-  loadResearchers();
+ await updateScores();
+ await loadResearchers();
 }
 
 });
