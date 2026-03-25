@@ -177,37 +177,38 @@ const { data: existingPub } = await supabase
 
 // Only insert if it doesn't already exist
 if (!existingPub) {
-  await supabase
-    .from("publications")
-    .insert([let citations = 0;
 
-try {
+  let citations = 0;
 
-  const semanticResponse = await fetch(
-    "https://api.semanticscholar.org/graph/v1/paper/search?query=" 
-    + encodeURIComponent(title) + 
-    "&limit=1&fields=citationCount"
-  );
+  try {
 
-  const semanticData = await semanticResponse.json();
+    const semanticResponse = await fetch(
+      "https://api.semanticscholar.org/graph/v1/paper/search?query=" 
+      + encodeURIComponent(title) + 
+      "&limit=1&fields=citationCount"
+    );
 
-  if (semanticData.data && semanticData.data.length > 0) {
-    citations = semanticData.data[0].citationCount || 0;
+    const semanticData = await semanticResponse.json();
+
+    if (semanticData.data && semanticData.data.length > 0) {
+      citations = semanticData.data[0].citationCount || 0;
+    }
+
+  } catch (e) {
+    console.log("Citation fetch failed");
   }
 
-} catch (e) {
-  console.log("Citation fetch failed");
+  await supabase
+    .from("publications")
+    .insert([{
+      researcher_id: researcher.id,
+      title: title,
+      year: year,
+      citations: citations
+    }]);
+
 }
 
-await supabase
-  .from("publications")
-  .insert([{
-    researcher_id: researcher.id,
-    title: title,
-    year: year,
-    citations: citations
-  }]);
-]);
 }
 
     }
@@ -216,7 +217,7 @@ await supabase
 
   await updateScores();
   await loadResearchers();
-
+  await loadResearchersDropdown();
   document.getElementById("fetchStatus").innerText = "Publications imported!";
 
 });
