@@ -46,7 +46,7 @@ async function loadResearchers() {
  const { data, error } = await supabase
     .from("researchers")
     .select("*")
-    .eq("score_approved", true);
+    
 
   const list = document.getElementById("researcherList");
   list.innerHTML = "";
@@ -103,6 +103,7 @@ pubButton.addEventListener("click", async () => {
   document.getElementById("pubStatus").innerText = "Publication added!";
  await updateScores();
  await loadResearchers();
+ await loadResearchersDropdown();    
 }
 
 });
@@ -222,8 +223,11 @@ if (!existingPub) {
 
 });
 
-loadResearchers();
-loadResearchersDropdown();
+(async () => {
+  await loadResearchers();
+  await loadResearchersDropdown();
+})();
+
 
 </script>
 
